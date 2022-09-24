@@ -47,7 +47,7 @@ class _ProductsOverviewScreenState extends State<ProductOverviewScreen> {
         },
       ),
     );
-  }
+  }   
 
   Widget buildProductFilterMenu() {
     return PopupMenuButton(
