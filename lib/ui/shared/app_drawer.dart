@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../auth/auth_manager.dart';
 import '../orders/orders_screen.dart';
 import '../products/user_products_screen.dart';
 
@@ -15,6 +17,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Hello Friend!'),
             automaticallyImplyLeading: false,
           ),
+
           const Divider(),
           ListTile(
             leading: const Icon(Icons.shop),
@@ -23,6 +26,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context).pushReplacementNamed('/');
             },
           ),
+
           const Divider(),
           ListTile(
             leading: const Icon(Icons.payment),
@@ -32,6 +36,7 @@ class AppDrawer extends StatelessWidget {
                 .pushReplacementNamed(OrdersScreen.routeName);
             },
           ),
+
           const Divider(),
           ListTile(
             leading: const Icon(Icons.edit),
@@ -40,7 +45,20 @@ class AppDrawer extends StatelessWidget {
               Navigator.of(context)
                 .pushReplacementNamed(UserProductsScreen.routeName);
             },
-          )
+          ),
+
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text('Logout'),
+            onTap: () {
+              Navigator.of(context)
+                ..pop()
+                ..pushReplacementNamed('/');
+              context.read<AuthManager>().logout();
+            },
+          ),
+
         ],
       ),
     );

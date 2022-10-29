@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:myshop/ui/cart/cart_manager.dart';
-import 'package:myshop/ui/cart/cart_screen.dart';
-import 'package:myshop/ui/orders/orders_screen.dart';
-import 'package:myshop/ui/products/edit_product_screen.dart';
-import 'package:myshop/ui/products/user_products_screen.dart';
 import 'package:provider/provider.dart';
-import 'ui/orders/order_manager.dart';
-import 'ui/products/products_manager.dart';
-import 'ui/products/product_detail_screen.dart';
-import 'ui/products/product_overview_screen.dart';
-import 'ui/cart/cart_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+import 'ui/screens.dart';
+
+Future<void> main() async {
+  await dotenv.load();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key:  key);
 
   // This widget is the root of your application.
   @override
@@ -24,6 +18,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
 
+        ChangeNotifierProvider(
+          create: (context) => AuthManager(),
+        ),
         ChangeNotifierProvider(
           create: (ctx) => ProductsManager(),
         ),
@@ -35,44 +32,47 @@ class MyApp extends StatelessWidget {
         ),
 
       ],
-    child: MaterialApp(
-      title: 'My Shop',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          fontFamily: 'Lato',
-          colorScheme: ColorScheme.fromSwatch(
-            primarySwatch: Colors.purple,
-          ).copyWith(
-            secondary: Colors.deepOrange,
+    child: Consumer<AuthManager>(
+      builder: (ctx, authManager, child) {
+        return MaterialApp(
+          title: 'My Shop',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            fontFamily: 'Lato',
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.purple,
+            ).copyWith(
+              secondary: Colors.deepOrange,
+            ),
           ),
-        ),
 
-      home: const ProductOverviewScreen(),
-      routes: {
-          CartScreen.routeName: 
-            (ctx) => const CartScreen(),
-          OrdersScreen.routeName:
-            (ctx) => const OrdersScreen(),
-          UserProductsScreen.routeName:
-            (ctx) => const UserProductsScreen(),
-        },
-        onGenerateRoute: (settings) {
-          if (settings.name == EditProductScreen.routeName) {
-            final productId = settings.arguments as String?;
-            return MaterialPageRoute(
-              builder: (ctx) {
-                return EditProductScreen(
-                  productId != null
-                  ? ctx.read<ProductsManager>().findById(productId)
-                  : null,
+          home: const ProductOverviewScreen(),
+          routes: {
+              CartScreen.routeName: 
+                (ctx) => const CartScreen(),
+              OrdersScreen.routeName:
+                (ctx) => const OrdersScreen(),
+              UserProductsScreen.routeName:
+                (ctx) => const UserProductsScreen(),
+          },
+          onGenerateRoute: (settings) {
+              if (settings.name == EditProductScreen.routeName) {
+                final productId = settings.arguments as String?;
+                return MaterialPageRoute(
+                  builder: (ctx) {
+                    return EditProductScreen(
+                      productId != null
+                      ? ctx.read<ProductsManager>().findById(productId)
+                      : null,
+                    );
+                  },
                 );
-              },
-            );
-          }
-
-          return null;
+              }
+            return null;
+          },
+          );
         },
-      ),
+      ), 
     );
   }
 }
