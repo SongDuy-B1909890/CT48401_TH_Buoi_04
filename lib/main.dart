@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'ui/screens.dart';
+import'ui/auth/auth_manager.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -21,12 +22,21 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => AuthManager(),
         ),
-        ChangeNotifierProvider(
+
+        ChangeNotifierProxyProvider<AuthManager, ProductsManager>(
           create: (ctx) => ProductsManager(),
+          update: (ctx, authManager, productsManager) {
+              // Khi authManager có báo hiệu thay đổi thì đọc lại authToken
+              // cho productManager
+              productsManager!.authToken = authManager.authToken;
+              return productsManager;
+          },
         ),
+
         ChangeNotifierProvider(
           create: (ctx) => CartManager(),
         ),
+
         ChangeNotifierProvider(
           create: (ctx) => OrdersManager(),
         ),
